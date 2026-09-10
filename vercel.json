@@ -1,10 +1,7 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/static/index.html" },
     { "source": "/d/:token", "destination": "/static/delivery.html" }
-  ],
-  "routes": [
-    { "src": "/d/(.*)", "dest": "/static/delivery.html" },
-    { "src": "/(.*)", "dest": "/static/$1" }
   ],
   "headers": [
     {
