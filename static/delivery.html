@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Téléchargement — Consultant RH</title>
+    <style>
+:root {
+    --encre: #16181d;
+    --gris: #5c6270;
+    --trait: #e2e4e9;
+    --fond: #fdfdfc;
+    --bleu: #2557a7;
+    --bleu-d: #1d4a8f;
+    --vert: #2f6b45;
+    --vert-f: #eef5f0;
+    --rouge: #a8332a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: var(--fond);
+    color: var(--encre);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.card {
+    max-width: 480px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--trait);
+    border-radius: 8px;
+    padding: 40px 32px;
+    text-align: center;
+}
+.card h1 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.card p { color: var(--gris); font-size: 14px; margin-bottom: 24px; }
+.status { font-size: 14px; color: var(--gris); }
+.formats { text-align: left; margin: 16px 0; }
+.fmt-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--trait); font-size: 14px; }
+.fmt-row:last-child { border-bottom: none; }
+.fmt-row label { cursor: pointer; flex: 1; }
+.btn-download {
+    background: var(--bleu); color: #fff; border: none; border-radius: 6px;
+    padding: 12px 24px; font: 15px/1 inherit; font-weight: 500; cursor: pointer;
+    width: 100%; margin-top: 16px;
+}
+.btn-download:hover { background: var(--bleu-d); }
+.btn-download:disabled { opacity: .5; cursor: default; }
+.error { color: var(--rouge); font-size: 14px; }
+.expired { color: var(--rouge); }
+    </style>
+</head>
+<body>
+<div class="card" id="card">
+    <h1>Espace de livraison</h1>
+    <p>Téléchargez les documents de votre diagnostic RH.</p>
+    <div class="status" id="status">Vérification du lien…</div>
+</div>
+<script>
+'use strict';
+
+const API = window.__HUB_API || 'https://hr-hub.duckdns.org';
+const token = location.pathname.split('/d/')[1] || '';
+
+const FMT_LABELS = { html: 'HTML (interactif)', md: 'Markdown', docx: 'Word (.docx)' };
+
+async function init() {
+    const status = document.getElementById('status');
+    const card = document.getElementById('card');
+
+    if (!token) {
+        status.innerHTML = '<span class="error">Lien invalide.</span>';
+        return;
+    }
+
+    const res = await fetch(`${API}/api/delivery/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+    });
+
+    if (!res.ok) {
+        status.innerHTML = '<span class="expired">Ce lien est expiré ou a été révoqué.</span>';
+        return;
+    }
+
+    const data = await res.json();
+    const session = data.session;
+    const formats = session.formats || ['html', 'md', 'docx'];
+
+    status.innerHTML = '';
+    let html = '<div class="formats">';
+    for (const fmt of formats) {
+        html += `<div class="fmt-row">
+            <input type="checkbox" id="fmt-${fmt}" value="${fmt}" checked>
+            <label for="fmt-${fmt}">${FMT_LABELS[fmt] || fmt}</label>
+        </div>`;
+    }
+    html += '</div>';
+    html += '<button class="btn-download" id="btn-dl">Télécharger les documents</button>';
+    status.innerHTML = html;
+
+    document.getElementById('btn-dl').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-dl');
+        btn.disabled = true;
+        btn.textContent = 'Préparation…';
+
+        await fetch(`${API}/api/delivery/${session.id}/downloaded`, { method: 'POST' });
+
+        btn.textContent = 'Téléchargement lancé';
+        setTimeout(() => {
+            btn.textContent = 'Télécharger les documents';
+            btn.disabled = false;
+        }, 3000);
+    });
+}
+
+init();
+</script>
+</body>
+</html>

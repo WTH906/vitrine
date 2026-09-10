@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consultant RH</title>
+    <style>
+:root {
+    --encre: #16181d;
+    --gris: #5c6270;
+    --trait: #e2e4e9;
+    --fond: #fdfdfc;
+    --bleu: #2557a7;
+    --bleu-f: #eef3fb;
+    --bleu-d: #1d4a8f;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: var(--fond);
+    color: var(--encre);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* --- Banner / Services --- */
+.banner {
+    background: var(--encre);
+    color: #fff;
+    overflow-x: auto;
+}
+.banner-inner {
+    display: flex;
+    gap: 0;
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: 0;
+}
+.service-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 28px 24px;
+    border-right: 1px solid rgba(255,255,255,.08);
+    text-align: center;
+}
+.service-card:last-child { border-right: none; }
+.service-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: -.01em;
+}
+.service-card p {
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    line-height: 1.45;
+}
+
+/* --- Hero --- */
+.hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 24px 48px;
+    text-align: center;
+}
+.hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+}
+.hero p {
+    font-size: 18px;
+    color: var(--gris);
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* --- About --- */
+.about {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+}
+.about h2 {
+    font-size: 13px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--gris);
+    border-bottom: 1px solid var(--trait);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+.about-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--encre);
+    white-space: pre-line;
+}
+
+/* --- Footer --- */
+footer {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 24px 40px;
+    border-top: 1px solid var(--trait);
+    font-size: 13px;
+    color: var(--gris);
+    text-align: center;
+}
+
+/* --- Admin bar --- */
+.admin-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bleu);
+    color: #fff;
+    padding: 10px 20px;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    font-size: 13px;
+}
+.admin-bar.visible { display: flex; }
+.admin-bar button {
+    background: #fff;
+    color: var(--bleu);
+    border: none;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font: 13px/1 inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+.admin-bar button:hover { background: var(--bleu-f); }
+
+/* --- Editable --- */
+[contenteditable="true"] {
+    outline: 2px dashed var(--bleu);
+    outline-offset: 4px;
+    border-radius: 3px;
+    min-height: 1.2em;
+}
+[contenteditable="true"]:focus {
+    outline-color: var(--bleu-d);
+    background: var(--bleu-f);
+}
+
+/* --- Admin service editor --- */
+.service-editor {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 1px solid var(--trait);
+    border-radius: 8px;
+    padding: 28px;
+    z-index: 200;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.15);
+}
+.service-editor.open { display: block; }
+.service-editor h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+.service-editor .svc-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.service-editor input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--trait);
+    border-radius: 4px;
+    font: 14px inherit;
+}
+.service-editor input:focus {
+    outline: none;
+    border-color: var(--bleu);
+}
+.service-editor .svc-remove {
+    background: none;
+    border: none;
+    color: var(--gris);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+.service-editor .svc-remove:hover { color: #a8332a; }
+.service-editor .svc-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+.service-editor .btn-add-svc {
+    background: none;
+    border: 1px dashed var(--trait);
+    border-radius: 4px;
+    padding: 7px;
+    width: 100%;
+    font: 13px inherit;
+    color: var(--gris);
+    cursor: pointer;
+}
+.service-editor .btn-add-svc:hover { border-color: var(--bleu); color: var(--bleu); }
+.btn-save { background: var(--bleu); color: #fff; border: none; border-radius: 4px; padding: 8px 20px; font: 14px inherit; font-weight: 500; cursor: pointer; }
+.btn-save:hover { background: var(--bleu-d); }
+.btn-cancel { background: #f0f1f3; color: var(--encre); border: none; border-radius: 4px; padding: 8px 20px; font: 14px inherit; cursor: pointer; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 150; }
+.overlay.open { display: block; }
+
+@media (max-width: 600px) {
+    .banner-inner { flex-direction: column; }
+    .service-card { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); padding: 20px; }
+    .service-card:last-child { border-bottom: none; }
+    .hero { padding: 40px 20px 32px; }
+    .hero h1 { font-size: 28px; }
+    .hero p { font-size: 16px; }
+    .about { padding: 0 20px 40px; }
+}
+    </style>
+</head>
+<body>
+
+<div class="banner" id="banner">
+    <div class="banner-inner" id="services-banner"></div>
+</div>
+
+<section class="hero">
+    <h1 id="hero-title"></h1>
+    <p id="hero-subtitle"></p>
+</section>
+
+<section class="about">
+    <h2 id="about-title"></h2>
+    <div class="about-text" id="about-text"></div>
+</section>
+
+<footer id="footer-text"></footer>
+
+<div class="admin-bar" id="admin-bar">
+    <span>Mode admin</span>
+    <button id="btn-edit-services">Services</button>
+    <button id="btn-save-all">Enregistrer</button>
+    <span style="flex:1"></span>
+    <span id="save-status" style="opacity:.7"></span>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="service-editor" id="service-editor">
+    <h3>Services</h3>
+    <div id="svc-list"></div>
+    <button class="btn-add-svc" id="btn-add-svc">+ Ajouter un service</button>
+    <div class="svc-actions">
+        <button class="btn-save" id="svc-save">Appliquer</button>
+        <button class="btn-cancel" id="svc-cancel">Annuler</button>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const $ = s => document.querySelector(s);
+
+const API = window.__HUB_API || 'https://hr-hub.duckdns.org';
+
+let content = {};
+let isAdmin = false;
+let adminToken = '';
+let editServices = [];
+
+async function init() {
+    const params = new URLSearchParams(location.search);
+    adminToken = params.get('admin') || '';
+
+    if (adminToken) {
+        const res = await fetch(`${API}/api/site/admin-check?token=${encodeURIComponent(adminToken)}`);
+        const d = await res.json();
+        isAdmin = d.admin;
+    }
+
+    const res = await fetch(`${API}/api/site/content`);
+    content = await res.json();
+    render();
+
+    if (isAdmin) enableAdmin();
+}
+
+function render() {
+    renderServices();
+    $('#hero-title').textContent = content.hero_title || '';
+    $('#hero-subtitle').textContent = content.hero_subtitle || '';
+    $('#about-title').textContent = content.about_title || '';
+    $('#about-text').textContent = content.about_text || '';
+    $('#footer-text').textContent = content.footer_text || '';
+}
+
+function renderServices() {
+    const c = $('#services-banner');
+    const svcs = content.services || [];
+    c.innerHTML = svcs.map(s =>
+        `<div class="service-card"><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></div>`
+    ).join('');
+}
+
+function enableAdmin() {
+    $('#admin-bar').classList.add('visible');
+    document.body.style.paddingBottom = '52px';
+
+    const editables = ['hero-title', 'hero-subtitle', 'about-title', 'about-text', 'footer-text'];
+    for (const id of editables) {
+        const el = $(`#${id}`);
+        el.contentEditable = 'true';
+    }
+
+    $('#btn-save-all').addEventListener('click', saveAll);
+    $('#btn-edit-services').addEventListener('click', openServiceEditor);
+    $('#svc-save').addEventListener('click', applyServices);
+    $('#svc-cancel').addEventListener('click', closeServiceEditor);
+    $('#overlay').addEventListener('click', closeServiceEditor);
+    $('#btn-add-svc').addEventListener('click', () => {
+        editServices.push({ title: '', desc: '' });
+        renderServiceEditor();
+    });
+}
+
+async function saveAll() {
+    content.hero_title = $('#hero-title').textContent.trim();
+    content.hero_subtitle = $('#hero-subtitle').textContent.trim();
+    content.about_title = $('#about-title').textContent.trim();
+    content.about_text = $('#about-text').textContent.trim();
+    content.footer_text = $('#footer-text').textContent.trim();
+
+    $('#save-status').textContent = 'Enregistrement…';
+    await fetch(`${API}/api/site/content`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+        body: JSON.stringify(content),
+    });
+    $('#save-status').textContent = 'Enregistré';
+    setTimeout(() => $('#save-status').textContent = '', 2000);
+}
+
+function openServiceEditor() {
+    editServices = (content.services || []).map(s => ({ ...s }));
+    renderServiceEditor();
+    $('#service-editor').classList.add('open');
+    $('#overlay').classList.add('open');
+}
+
+function closeServiceEditor() {
+    $('#service-editor').classList.remove('open');
+    $('#overlay').classList.remove('open');
+}
+
+function renderServiceEditor() {
+    const list = $('#svc-list');
+    list.innerHTML = editServices.map((s, i) => `
+        <div class="svc-row">
+            <input type="text" placeholder="Titre" value="${esc(s.title)}" data-svc-idx="${i}" data-svc-field="title">
+            <input type="text" placeholder="Description" value="${esc(s.desc)}" data-svc-idx="${i}" data-svc-field="desc">
+            <button class="svc-remove" data-svc-remove="${i}">&times;</button>
+        </div>
+    `).join('');
+
+    for (const input of list.querySelectorAll('input')) {
+        input.addEventListener('input', () => {
+            const idx = parseInt(input.dataset.svcIdx);
+            editServices[idx][input.dataset.svcField] = input.value;
+        });
+    }
+    for (const btn of list.querySelectorAll('.svc-remove')) {
+        btn.addEventListener('click', () => {
+            editServices.splice(parseInt(btn.dataset.svcRemove), 1);
+            renderServiceEditor();
+        });
+    }
+}
+
+function applyServices() {
+    content.services = editServices.filter(s => s.title.trim() || s.desc.trim());
+    renderServices();
+    closeServiceEditor();
+}
+
+init();
+</script>
+</body>
+</html>
