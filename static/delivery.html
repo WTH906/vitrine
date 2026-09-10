@@ -3,62 +3,88 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Téléchargement — Consultant RH</title>
+    <title>Livraison — Consultant RH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
 :root {
-    --encre: #16181d;
-    --gris: #5c6270;
-    --trait: #e2e4e9;
-    --fond: #fdfdfc;
-    --bleu: #2557a7;
-    --bleu-d: #1d4a8f;
-    --vert: #2f6b45;
-    --vert-f: #eef5f0;
-    --rouge: #a8332a;
+    --bg: #0a0b0f;
+    --bg-card: #161722;
+    --fg: #f0f1f4;
+    --fg-muted: #8b8fa3;
+    --fg-dim: #5c5f73;
+    --border: #23253a;
+    --accent: #4d8fcc;
+    --accent-hover: #5da0dd;
+    --vert: #3da06b;
+    --vert-bg: rgba(61,160,107,.1);
+    --rouge: #e54d42;
+    --font-head: 'EB Garamond', Georgia, serif;
+    --font-body: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background: var(--fond);
-    color: var(--encre);
-    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 16px/1.65 var(--font-body);
     display: flex;
     min-height: 100vh;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0s !important; }
 }
 .card {
     max-width: 480px;
     width: 100%;
-    background: #fff;
-    border: 1px solid var(--trait);
-    border-radius: 8px;
-    padding: 40px 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px 36px;
     text-align: center;
 }
-.card h1 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
-.card p { color: var(--gris); font-size: 14px; margin-bottom: 24px; }
-.status { font-size: 14px; color: var(--gris); }
-.formats { text-align: left; margin: 16px 0; }
-.fmt-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--trait); font-size: 14px; }
+.card h1 {
+    font: 600 24px/1.2 var(--font-head);
+    color: #fff;
+    margin-bottom: 8px;
+}
+.card p { color: var(--fg-muted); font-size: 14px; margin-bottom: 28px; }
+.status { font-size: 14px; color: var(--fg-muted); }
+.formats { text-align: left; margin: 20px 0; }
+.fmt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--fg);
+}
 .fmt-row:last-child { border-bottom: none; }
 .fmt-row label { cursor: pointer; flex: 1; }
+.fmt-row input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
 .btn-download {
-    background: var(--bleu); color: #fff; border: none; border-radius: 6px;
-    padding: 12px 24px; font: 15px/1 inherit; font-weight: 500; cursor: pointer;
-    width: 100%; margin-top: 16px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; padding: 14px 24px;
+    font: 500 15px/1 var(--font-body);
+    cursor: pointer; width: 100%; margin-top: 20px;
+    transition: background 200ms ease;
 }
-.btn-download:hover { background: var(--bleu-d); }
-.btn-download:disabled { opacity: .5; cursor: default; }
-.error { color: var(--rouge); font-size: 14px; }
+.btn-download:hover { background: var(--accent-hover); }
+.btn-download:disabled { opacity: .4; cursor: default; }
+.error { color: var(--rouge); }
 .expired { color: var(--rouge); }
     </style>
 </head>
 <body>
 <div class="card" id="card">
     <h1>Espace de livraison</h1>
-    <p>Téléchargez les documents de votre diagnostic RH.</p>
-    <div class="status" id="status">Vérification du lien…</div>
+    <p>Vos documents de diagnostic RH sont disponibles au t&eacute;l&eacute;chargement.</p>
+    <div class="status" id="status">V&eacute;rification du lien&hellip;</div>
 </div>
 <script>
 'use strict';
@@ -70,7 +96,6 @@ const FMT_LABELS = { html: 'HTML (interactif)', md: 'Markdown', docx: 'Word (.do
 
 async function init() {
     const status = document.getElementById('status');
-    const card = document.getElementById('card');
 
     if (!token) {
         status.innerHTML = '<span class="error">Lien invalide.</span>';
@@ -92,7 +117,6 @@ async function init() {
     const session = data.session;
     const formats = session.formats || ['html', 'md', 'docx'];
 
-    status.innerHTML = '';
     let html = '<div class="formats">';
     for (const fmt of formats) {
         html += `<div class="fmt-row">
@@ -101,7 +125,7 @@ async function init() {
         </div>`;
     }
     html += '</div>';
-    html += '<button class="btn-download" id="btn-dl">Télécharger les documents</button>';
+    html += '<button class="btn-download" id="btn-dl">Télécharger</button>';
     status.innerHTML = html;
 
     document.getElementById('btn-dl').addEventListener('click', async () => {
@@ -113,7 +137,7 @@ async function init() {
 
         btn.textContent = 'Téléchargement lancé';
         setTimeout(() => {
-            btn.textContent = 'Télécharger les documents';
+            btn.textContent = 'Télécharger';
             btn.disabled = false;
         }, 3000);
     });

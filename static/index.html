@@ -4,119 +4,136 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Consultant RH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
 :root {
-    --encre: #16181d;
-    --gris: #5c6270;
-    --trait: #e2e4e9;
-    --fond: #fdfdfc;
-    --bleu: #2557a7;
-    --bleu-f: #eef3fb;
-    --bleu-d: #1d4a8f;
+    --bg: #0a0b0f;
+    --bg-raised: #12131a;
+    --bg-card: #161722;
+    --fg: #f0f1f4;
+    --fg-muted: #8b8fa3;
+    --fg-dim: #5c5f73;
+    --border: #23253a;
+    --accent: #4d8fcc;
+    --accent-hover: #5da0dd;
+    --accent-muted: rgba(77,143,204,.12);
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 24px;
+    --space-lg: 32px;
+    --space-xl: 48px;
+    --space-2xl: 64px;
+    --space-3xl: 96px;
+    --font-head: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --font-body: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --shadow-modal: 0 16px 48px rgba(0,0,0,.5);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background: var(--fond);
-    color: var(--encre);
-    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 16px/1.65 var(--font-body);
+    -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }
 
-/* --- Banner / Services --- */
+/* ── Services banner ── */
 .banner {
-    background: var(--encre);
-    color: #fff;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
     overflow-x: auto;
 }
 .banner-inner {
     display: flex;
-    gap: 0;
-    max-width: 1000px;
+    max-width: 960px;
     margin: 0 auto;
-    min-height: 0;
 }
 .service-card {
     flex: 1;
-    min-width: 200px;
-    padding: 28px 24px;
-    border-right: 1px solid rgba(255,255,255,.08);
+    min-width: 180px;
+    padding: var(--space-lg) var(--space-md);
     text-align: center;
+    border-right: 1px solid var(--border);
+    transition: background 200ms ease;
 }
 .service-card:last-child { border-right: none; }
+.service-card:hover { background: var(--accent-muted); }
 .service-card h3 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    letter-spacing: -.01em;
+    font: 500 15px/1.3 var(--font-body);
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+    letter-spacing: .01em;
 }
 .service-card p {
     font-size: 13px;
-    color: rgba(255,255,255,.6);
-    line-height: 1.45;
+    color: var(--fg-muted);
+    line-height: 1.5;
 }
 
-/* --- Hero --- */
+/* ── Hero ── */
 .hero {
-    max-width: 720px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 64px 24px 48px;
+    padding: var(--space-3xl) var(--space-md) var(--space-2xl);
     text-align: center;
 }
 .hero h1 {
-    font-size: 36px;
-    font-weight: 700;
+    font: 700 42px/1.1 var(--font-head);
+    color: #fff;
     letter-spacing: -.02em;
-    line-height: 1.15;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 .hero p {
-    font-size: 18px;
-    color: var(--gris);
-    max-width: 520px;
+    font: 300 19px/1.55 var(--font-body);
+    color: var(--fg-muted);
+    max-width: 480px;
     margin: 0 auto;
 }
 
-/* --- About --- */
+/* ── About ── */
 .about {
-    max-width: 720px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 0 24px 64px;
+    padding: 0 var(--space-md) var(--space-3xl);
 }
 .about h2 {
-    font-size: 13px;
-    letter-spacing: .12em;
+    font: 500 13px/1 var(--font-body);
+    letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--gris);
-    border-bottom: 1px solid var(--trait);
-    padding-bottom: 8px;
-    margin-bottom: 20px;
+    color: var(--fg-dim);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: var(--space-md);
 }
 .about-text {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--encre);
+    font: 400 16px/1.8 var(--font-body);
+    color: var(--fg-muted);
     white-space: pre-line;
 }
 
-/* --- Footer --- */
+/* ── Footer ── */
 footer {
-    max-width: 720px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 20px 24px 40px;
-    border-top: 1px solid var(--trait);
+    padding: var(--space-md) var(--space-md) var(--space-xl);
+    border-top: 1px solid var(--border);
     font-size: 13px;
-    color: var(--gris);
+    color: var(--fg-dim);
     text-align: center;
 }
 
-/* --- Admin bar --- */
+/* ── Admin bar ── */
 .admin-bar {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bleu);
-    color: #fff;
-    padding: 10px 20px;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-raised);
+    border-top: 1px solid var(--border);
+    color: var(--fg);
+    padding: 10px var(--space-md);
     display: none;
     align-items: center;
     gap: 12px;
@@ -125,106 +142,114 @@ footer {
 }
 .admin-bar.visible { display: flex; }
 .admin-bar button {
-    background: #fff;
-    color: var(--bleu);
+    background: var(--accent);
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 6px 14px;
-    font: 13px/1 inherit;
-    font-weight: 500;
+    font: 500 13px/1 var(--font-body);
     cursor: pointer;
+    transition: background 200ms ease;
 }
-.admin-bar button:hover { background: var(--bleu-f); }
+.admin-bar button:hover { background: var(--accent-hover); }
 
-/* --- Editable --- */
+/* ── Editable ── */
 [contenteditable="true"] {
-    outline: 2px dashed var(--bleu);
-    outline-offset: 4px;
+    outline: 2px dashed var(--accent);
+    outline-offset: 6px;
     border-radius: 3px;
     min-height: 1.2em;
 }
 [contenteditable="true"]:focus {
-    outline-color: var(--bleu-d);
-    background: var(--bleu-f);
+    outline-color: var(--accent-hover);
+    background: var(--accent-muted);
 }
 
-/* --- Admin service editor --- */
+/* ── Service editor modal ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 150; backdrop-filter: blur(4px); }
+.overlay.open { display: block; }
 .service-editor {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: #fff;
-    border: 1px solid var(--trait);
-    border-radius: 8px;
-    padding: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: var(--space-lg);
     z-index: 200;
     width: 90%;
     max-width: 520px;
-    box-shadow: 0 8px 40px rgba(0,0,0,.15);
+    box-shadow: var(--shadow-modal);
 }
 .service-editor.open { display: block; }
 .service-editor h3 {
-    font-size: 18px;
-    margin-bottom: 16px;
+    font: 600 18px/1.3 var(--font-head);
+    color: #fff;
+    margin-bottom: var(--space-md);
 }
 .service-editor .svc-row {
     display: flex;
-    gap: 8px;
+    gap: var(--space-sm);
     margin-bottom: 10px;
     align-items: center;
 }
 .service-editor input {
     flex: 1;
-    padding: 7px 10px;
-    border: 1px solid var(--trait);
-    border-radius: 4px;
-    font: 14px inherit;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: 14px var(--font-body);
+    background: var(--bg);
+    color: var(--fg);
+    transition: border-color 200ms ease;
 }
-.service-editor input:focus {
-    outline: none;
-    border-color: var(--bleu);
-}
+.service-editor input:focus { outline: none; border-color: var(--accent); }
+.service-editor input::placeholder { color: var(--fg-dim); }
 .service-editor .svc-remove {
-    background: none;
-    border: none;
-    color: var(--gris);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 4px;
+    background: none; border: none;
+    color: var(--fg-dim); font-size: 18px;
+    cursor: pointer; padding: 0 4px;
+    transition: color 200ms ease;
 }
-.service-editor .svc-remove:hover { color: #a8332a; }
-.service-editor .svc-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-}
+.service-editor .svc-remove:hover { color: #e54d42; }
+.service-editor .svc-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-md); }
 .service-editor .btn-add-svc {
     background: none;
-    border: 1px dashed var(--trait);
-    border-radius: 4px;
-    padding: 7px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 8px;
     width: 100%;
-    font: 13px inherit;
-    color: var(--gris);
+    font: 13px var(--font-body);
+    color: var(--fg-dim);
     cursor: pointer;
+    transition: border-color 200ms ease, color 200ms ease;
 }
-.service-editor .btn-add-svc:hover { border-color: var(--bleu); color: var(--bleu); }
-.btn-save { background: var(--bleu); color: #fff; border: none; border-radius: 4px; padding: 8px 20px; font: 14px inherit; font-weight: 500; cursor: pointer; }
-.btn-save:hover { background: var(--bleu-d); }
-.btn-cancel { background: #f0f1f3; color: var(--encre); border: none; border-radius: 4px; padding: 8px 20px; font: 14px inherit; cursor: pointer; }
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 150; }
-.overlay.open { display: block; }
+.service-editor .btn-add-svc:hover { border-color: var(--accent); color: var(--accent); }
+.btn-save {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 6px; padding: 9px 20px;
+    font: 500 14px var(--font-body); cursor: pointer;
+    transition: background 200ms ease;
+}
+.btn-save:hover { background: var(--accent-hover); }
+.btn-cancel {
+    background: var(--bg); color: var(--fg-muted);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 9px 20px; font: 14px var(--font-body);
+    cursor: pointer; transition: border-color 200ms ease;
+}
+.btn-cancel:hover { border-color: var(--fg-dim); }
 
+/* ── Responsive ── */
 @media (max-width: 600px) {
     .banner-inner { flex-direction: column; }
-    .service-card { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); padding: 20px; }
+    .service-card { border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
     .service-card:last-child { border-bottom: none; }
-    .hero { padding: 40px 20px 32px; }
-    .hero h1 { font-size: 28px; }
-    .hero p { font-size: 16px; }
-    .about { padding: 0 20px 40px; }
+    .hero { padding: var(--space-xl) 20px var(--space-lg); }
+    .hero h1 { font-size: 30px; }
+    .hero p { font-size: 17px; }
+    .about { padding: 0 20px var(--space-xl); }
 }
     </style>
 </head>
@@ -247,7 +272,7 @@ footer {
 <footer id="footer-text"></footer>
 
 <div class="admin-bar" id="admin-bar">
-    <span>Mode admin</span>
+    <span>Admin</span>
     <button id="btn-edit-services">Services</button>
     <button id="btn-save-all">Enregistrer</button>
     <span style="flex:1"></span>
@@ -318,8 +343,7 @@ function enableAdmin() {
 
     const editables = ['hero-title', 'hero-subtitle', 'about-title', 'about-text', 'footer-text'];
     for (const id of editables) {
-        const el = $(`#${id}`);
-        el.contentEditable = 'true';
+        $(`#${id}`).contentEditable = 'true';
     }
 
     $('#btn-save-all').addEventListener('click', saveAll);
