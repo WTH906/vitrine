@@ -272,11 +272,11 @@ footer {
 <footer id="footer-text"></footer>
 
 <div class="admin-bar" id="admin-bar">
-    <span>Admin</span>
+    <span style="color:var(--accent);font-weight:600">Admin</span>
     <button id="btn-edit-services">Services</button>
     <button id="btn-save-all">Enregistrer</button>
     <span style="flex:1"></span>
-    <span id="save-status" style="opacity:.7"></span>
+    <span id="save-status" style="color:var(--accent)"></span>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -308,15 +308,25 @@ async function init() {
     adminToken = params.get('admin') || '';
 
     if (adminToken) {
-        const res = await fetch(`${API}/api/site/admin-check?token=${encodeURIComponent(adminToken)}`);
-        const d = await res.json();
-        isAdmin = d.admin;
+        try {
+            const res = await fetch(`${API}/api/site/admin-check?token=${encodeURIComponent(adminToken)}`);
+            if (res.ok) {
+                const d = await res.json();
+                isAdmin = d.admin;
+            }
+        } catch (e) {
+            console.error('Admin check failed:', e);
+        }
     }
 
-    const res = await fetch(`${API}/api/site/content`);
-    content = await res.json();
-    render();
+    try {
+        const res = await fetch(`${API}/api/site/content`);
+        if (res.ok) content = await res.json();
+    } catch (e) {
+        console.error('Content fetch failed:', e);
+    }
 
+    render();
     if (isAdmin) enableAdmin();
 }
 
@@ -343,7 +353,8 @@ function enableAdmin() {
 
     const editables = ['hero-title', 'hero-subtitle', 'about-title', 'about-text', 'footer-text'];
     for (const id of editables) {
-        $(`#${id}`).contentEditable = 'true';
+        const el = $(`#${id}`);
+        if (el) el.contentEditable = 'true';
     }
 
     $('#btn-save-all').addEventListener('click', saveAll);
@@ -355,6 +366,14 @@ function enableAdmin() {
         editServices.push({ title: '', desc: '' });
         renderServiceEditor();
     });
+
+    showStatus('Mode admin actif — cliquez sur un texte pour le modifier', 4000);
+}
+
+function showStatus(msg, duration) {
+    const el = $('#save-status');
+    el.textContent = msg;
+    if (duration) setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, duration);
 }
 
 async function saveAll() {
@@ -364,14 +383,19 @@ async function saveAll() {
     content.about_text = $('#about-text').textContent.trim();
     content.footer_text = $('#footer-text').textContent.trim();
 
-    $('#save-status').textContent = 'Enregistrement…';
-    await fetch(`${API}/api/site/content`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
-        body: JSON.stringify(content),
-    });
-    $('#save-status').textContent = 'Enregistré';
-    setTimeout(() => $('#save-status').textContent = '', 2000);
+    showStatus('Enregistrement…');
+    try {
+        const res = await fetch(`${API}/api/site/content`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+            body: JSON.stringify(content),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showStatus('Enregistré ✓', 2500);
+    } catch (e) {
+        console.error('Save failed:', e);
+        showStatus('Erreur : ' + e.message, 5000);
+    }
 }
 
 function openServiceEditor() {
