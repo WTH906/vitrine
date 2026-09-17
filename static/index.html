@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Consultant RH</title>
+    <meta name="description" content="Consultante RH independante — conformite, diagnostic et accompagnement pour TPE/PME. Obligations sociales, DUERP, entretien professionnel, index egalite.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -14,7 +15,7 @@
     --bg-card: #161722;
     --fg: #f0f1f4;
     --fg-muted: #8b8fa3;
-    --fg-dim: #5c5f73;
+    --fg-dim: #7d8094;
     --border: #23253a;
     --accent: #4d8fcc;
     --accent-hover: #5da0dd;
@@ -29,6 +30,8 @@
     --font-head: 'EB Garamond', Georgia, 'Times New Roman', serif;
     --font-body: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --shadow-modal: 0 16px 48px rgba(0,0,0,.5);
+    --success: #3db97a;
+    --error: #e54d42;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -37,42 +40,201 @@ body {
     font: 400 16px/1.65 var(--font-body);
     -webkit-font-smoothing: antialiased;
 }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }
 
-/* ── Services banner ── */
-.banner {
+/* ── Navbar ── */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border);
-    overflow-x: auto;
 }
-.banner-inner {
+.nav-inner {
     display: flex;
-    max-width: 960px;
+    align-items: center;
+    max-width: 1080px;
     margin: 0 auto;
+    padding: 0 var(--space-md);
+    height: 56px;
 }
-.service-card {
+.nav-brand {
+    font: 600 20px/1 var(--font-head);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-right: var(--space-lg);
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
     flex: 1;
-    min-width: 180px;
-    padding: var(--space-lg) var(--space-md);
-    text-align: center;
-    border-right: 1px solid var(--border);
-    transition: background 200ms ease;
+    list-style: none;
 }
-.service-card:last-child { border-right: none; }
-.service-card:hover { background: var(--accent-muted); }
-.service-card h3 {
-    font: 500 15px/1.3 var(--font-body);
-    color: var(--fg);
-    margin-bottom: var(--space-xs);
-    letter-spacing: .01em;
-}
-.service-card p {
-    font-size: 13px;
+.nav-links > li { position: relative; }
+.nav-links > li > a,
+.nav-links > li > button {
+    display: block;
+    padding: 0 14px;
+    height: 56px;
+    line-height: 56px;
+    font: 400 14px/56px var(--font-body);
     color: var(--fg-muted);
-    line-height: 1.5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 200ms ease;
 }
+.nav-links > li > a:hover,
+.nav-links > li > button:hover,
+.nav-links > li > a.active,
+.nav-links > li > button.active {
+    color: #fff;
+}
+.nav-links > li > button::after {
+    content: '';
+    display: inline-block;
+    width: 0; height: 0;
+    margin-left: 5px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid currentColor;
+    vertical-align: middle;
+}
+
+/* Dropdown */
+.nav-dropdown {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    min-width: 320px;
+    padding: var(--space-sm) 0;
+    box-shadow: var(--shadow-modal);
+    z-index: 60;
+}
+.nav-dropdown.open { display: block; }
+.nav-dropdown a {
+    display: block;
+    padding: 10px 18px;
+    font: 400 14px/1.4 var(--font-body);
+    color: var(--fg-muted);
+    transition: background 150ms ease, color 150ms ease;
+}
+.nav-dropdown a:hover {
+    background: var(--accent-muted);
+    color: #fff;
+}
+.nav-dropdown a .dd-sub {
+    display: block;
+    font-size: 12px;
+    color: var(--fg-dim);
+    margin-top: 2px;
+}
+.nav-dropdown .dd-sep {
+    height: 1px;
+    background: var(--border);
+    margin: var(--space-xs) 0;
+}
+
+/* Lang toggle */
+.lang-toggle {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+    font: 500 12px/1 var(--font-body);
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease;
+}
+.lang-toggle button.active {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Hamburger */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto;
+}
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--fg);
+    margin: 5px 0;
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile nav */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 56px;
+    left: 0; right: 0; bottom: 0;
+    background: var(--bg-raised);
+    z-index: 45;
+    overflow-y: auto;
+    padding: var(--space-md);
+}
+.mobile-nav.open { display: block; }
+.mobile-nav a {
+    display: block;
+    padding: 14px 0;
+    font: 400 16px/1.4 var(--font-body);
+    color: var(--fg-muted);
+    border-bottom: 1px solid var(--border);
+}
+.mobile-nav a:hover,
+.mobile-nav a.active { color: #fff; }
+.mobile-nav .mobile-sub {
+    padding-left: var(--space-md);
+}
+.mobile-nav .mobile-sub a {
+    font-size: 14px;
+    padding: 10px 0;
+}
+.mobile-nav .mobile-lang {
+    display: flex;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    justify-content: center;
+}
+
+@media (max-width: 820px) {
+    .nav-links, .lang-toggle { display: none; }
+    .hamburger { display: block; }
+}
+
+/* ── Page sections ── */
+.page { display: none; }
+.page.active { display: block; }
 
 /* ── Hero ── */
 .hero {
@@ -94,13 +256,44 @@ body {
     margin: 0 auto;
 }
 
+/* ── Services grid ── */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    max-width: 960px;
+    margin: 0 auto var(--space-2xl);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.service-card {
+    background: var(--bg-raised);
+    padding: var(--space-lg) var(--space-md);
+    text-align: center;
+    transition: background 200ms ease;
+}
+.service-card:hover { background: var(--accent-muted); }
+.service-card h3 {
+    font: 500 15px/1.3 var(--font-body);
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+    letter-spacing: .01em;
+}
+.service-card p {
+    font-size: 13px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+}
+
 /* ── About ── */
 .about {
     max-width: 680px;
     margin: 0 auto;
     padding: 0 var(--space-md) var(--space-3xl);
 }
-.about h2 {
+.about h2, .section-heading {
     font: 500 13px/1 var(--font-body);
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -113,6 +306,358 @@ body {
     font: 400 16px/1.8 var(--font-body);
     color: var(--fg-muted);
     white-space: pre-line;
+}
+
+/* ── Content pages ── */
+.content-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-md) var(--space-3xl);
+}
+.content-wrap h1 {
+    font: 600 32px/1.2 var(--font-head);
+    color: #fff;
+    margin-bottom: var(--space-sm);
+}
+.content-wrap .subtitle {
+    font: 300 17px/1.5 var(--font-body);
+    color: var(--fg-muted);
+    margin-bottom: var(--space-xl);
+}
+
+/* ── Diagnostic ── */
+.diag-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+.diag-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.diag-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 300ms ease;
+}
+.diag-progress-text {
+    font-size: 13px;
+    color: var(--fg-dim);
+    white-space: nowrap;
+}
+
+.diag-question {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+.diag-question h3 {
+    font: 500 17px/1.4 var(--font-body);
+    color: var(--fg);
+    margin-bottom: var(--space-md);
+}
+.diag-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+.diag-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font: 400 15px/1.4 var(--font-body);
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: border-color 200ms ease, color 200ms ease, background 200ms ease;
+}
+.diag-opt:hover {
+    border-color: var(--accent);
+    color: #fff;
+}
+.diag-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-muted);
+    color: #fff;
+}
+
+.diag-nav {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+.diag-nav button {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font: 500 14px/1 var(--font-body);
+    cursor: pointer;
+    transition: background 200ms ease, border-color 200ms ease;
+}
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.btn-secondary {
+    background: var(--bg);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--fg-dim); color: var(--fg); }
+
+/* ── Diagnostic results ── */
+.diag-result {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+.diag-result h3 {
+    font: 600 18px/1.3 var(--font-head);
+    margin-bottom: var(--space-sm);
+}
+.diag-result.conforme h3 { color: var(--success); }
+.diag-result.non-conforme h3 { color: var(--error); }
+.diag-result.non-applicable h3 { color: var(--fg-dim); }
+.diag-result p {
+    font-size: 14px;
+    color: var(--fg-muted);
+    line-height: 1.6;
+}
+.result-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font: 500 12px/1.4 var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: var(--space-sm);
+}
+.result-badge.conforme { background: rgba(61,185,122,.15); color: var(--success); }
+.result-badge.non-conforme { background: rgba(229,77,66,.15); color: var(--error); }
+.result-badge.non-applicable { background: rgba(125,128,148,.15); color: var(--fg-dim); }
+
+/* ── Contact form ── */
+.contact-form-wrap {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: var(--space-lg);
+    margin-top: var(--space-xl);
+    max-width: 560px;
+}
+.contact-form-wrap h3 {
+    font: 600 22px/1.3 var(--font-head);
+    color: #fff;
+    margin-bottom: var(--space-xs);
+}
+.contact-form-wrap .cf-subtitle {
+    font-size: 14px;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-md);
+}
+.cf-field {
+    margin-bottom: 14px;
+}
+.cf-field label {
+    display: block;
+    font: 500 13px/1 var(--font-body);
+    color: var(--fg-dim);
+    margin-bottom: 6px;
+}
+.cf-field input,
+.cf-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: 14px/1.5 var(--font-body);
+    background: var(--bg);
+    color: var(--fg);
+    transition: border-color 200ms ease;
+    resize: vertical;
+}
+.cf-field input:focus,
+.cf-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.cf-field input::placeholder,
+.cf-field textarea::placeholder { color: var(--fg-dim); }
+.cf-check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+.cf-check input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--accent);
+}
+.cf-check label {
+    font-size: 13px;
+    color: var(--fg-muted);
+    cursor: pointer;
+}
+.cf-error {
+    color: var(--error);
+    font-size: 13px;
+    margin-bottom: var(--space-sm);
+    display: none;
+}
+.cf-error.show { display: block; }
+.cf-success {
+    color: var(--success);
+    font-size: 14px;
+    padding: var(--space-md);
+    text-align: center;
+    display: none;
+}
+.cf-success.show { display: block; }
+
+/* ── Coming soon card ── */
+.coming-soon-card {
+    max-width: 480px;
+    margin: var(--space-3xl) auto;
+    text-align: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: var(--space-2xl) var(--space-lg);
+}
+.coming-soon-card h2 {
+    font: 600 28px/1.2 var(--font-head);
+    color: #fff;
+    margin-bottom: var(--space-sm);
+}
+.coming-soon-card p {
+    font: 300 15px/1.6 var(--font-body);
+    color: var(--fg-muted);
+}
+
+/* ── Folio gallery ── */
+.folio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-md);
+}
+.folio-item {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 200ms ease;
+}
+.folio-item:hover { border-color: var(--accent); }
+.folio-thumb {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 500 15px/1.3 var(--font-body);
+    color: var(--fg-dim);
+    text-align: center;
+    padding: var(--space-md);
+}
+.folio-item:nth-child(1) .folio-thumb { background: linear-gradient(135deg, #1a2a4a, #0e1a2f); }
+.folio-item:nth-child(2) .folio-thumb { background: linear-gradient(135deg, #2a1a3a, #1a0e2f); }
+.folio-item:nth-child(3) .folio-thumb { background: linear-gradient(135deg, #1a3a2a, #0e2f1a); }
+.folio-item:nth-child(4) .folio-thumb { background: linear-gradient(135deg, #3a2a1a, #2f1a0e); }
+.folio-label {
+    padding: 14px var(--space-md);
+    font: 500 14px/1.3 var(--font-body);
+    color: var(--fg);
+    border-top: 1px solid var(--border);
+}
+
+/* ── Articles ── */
+.article-item {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    transition: border-color 200ms ease;
+}
+.article-item:hover { border-color: var(--accent); }
+.article-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    flex-wrap: wrap;
+}
+.article-date {
+    font-size: 12px;
+    color: var(--fg-dim);
+}
+.article-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font: 500 11px/1.4 var(--font-body);
+    background: var(--accent-muted);
+    color: var(--accent);
+}
+.article-item h3 {
+    font: 600 20px/1.3 var(--font-head);
+    color: #fff;
+    margin-bottom: var(--space-sm);
+}
+.article-body {
+    font: 400 15px/1.7 var(--font-body);
+    color: var(--fg-muted);
+}
+.article-body h1, .article-body h2, .article-body h3 {
+    font-family: var(--font-head);
+    color: var(--fg);
+    margin: var(--space-md) 0 var(--space-sm);
+}
+.article-body h1 { font-size: 22px; }
+.article-body h2 { font-size: 19px; }
+.article-body h3 { font-size: 16px; }
+.article-body p { margin-bottom: var(--space-sm); }
+.article-body ul, .article-body ol {
+    padding-left: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+.article-body li { margin-bottom: 4px; }
+.article-body code {
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+.article-body pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: var(--space-md);
+    overflow-x: auto;
+    margin-bottom: var(--space-md);
+}
+.article-body pre code {
+    background: none;
+    padding: 0;
+}
+.article-body strong { color: var(--fg); }
+.empty-state {
+    text-align: center;
+    padding: var(--space-3xl) var(--space-md);
+    color: var(--fg-dim);
+    font-size: 15px;
 }
 
 /* ── Footer ── */
@@ -180,6 +725,8 @@ footer {
     z-index: 200;
     width: 90%;
     max-width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
     box-shadow: var(--shadow-modal);
 }
 .service-editor.open { display: block; }
@@ -241,46 +788,143 @@ footer {
 }
 .btn-cancel:hover { border-color: var(--fg-dim); }
 
+/* ── Loading spinner ── */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-center {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-2xl);
+}
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
-    .banner-inner { flex-direction: column; }
-    .service-card { border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
-    .service-card:last-child { border-bottom: none; }
     .hero { padding: var(--space-xl) 20px var(--space-lg); }
     .hero h1 { font-size: 30px; }
     .hero p { font-size: 17px; }
     .about { padding: 0 20px var(--space-xl); }
+    .content-wrap { padding: var(--space-xl) 20px var(--space-2xl); }
+    .content-wrap h1 { font-size: 26px; }
+    .folio-grid { grid-template-columns: 1fr; }
+    .contact-form-wrap { padding: var(--space-md); }
 }
     </style>
 </head>
 <body>
 
-<div class="banner" id="banner">
-    <div class="banner-inner" id="services-banner"></div>
+<!-- ── Navbar ── -->
+<nav class="navbar" id="navbar">
+    <div class="nav-inner">
+        <a class="nav-brand" href="#home" id="nav-brand">Consultant RH</a>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#home" data-nav="home" data-t="nav_home">Accueil</a></li>
+            <li>
+                <button id="diag-toggle" data-t="nav_diagnostic">Diagnostic flash</button>
+                <div class="nav-dropdown" id="diag-dropdown"></div>
+            </li>
+            <li><a href="#conformite" data-nav="conformite" data-t="nav_conformite">Mise en conformite</a></li>
+            <li><a href="#chatbot" data-nav="chatbot" data-t="nav_chatbot">Chatbot conformite</a></li>
+            <li><a href="#folio" data-nav="folio" data-t="nav_folio">Folio</a></li>
+            <li><a href="#articles" data-nav="articles" data-t="nav_articles">Evolutions legales</a></li>
+        </ul>
+        <div class="lang-toggle" id="lang-toggle">
+            <button data-lang="fr" class="active">FR</button>
+            <button data-lang="en">EN</button>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- ── Mobile nav ── -->
+<div class="mobile-nav" id="mobile-nav">
+    <a href="#home" data-nav="home" data-t="nav_home">Accueil</a>
+    <a href="#diagnostic/full" data-nav="diagnostic" data-t="nav_diagnostic_full">Diagnostic complet</a>
+    <div class="mobile-sub" id="mobile-diag-sub"></div>
+    <a href="#conformite" data-nav="conformite" data-t="nav_conformite">Mise en conformite</a>
+    <a href="#chatbot" data-nav="chatbot" data-t="nav_chatbot">Chatbot conformite</a>
+    <a href="#folio" data-nav="folio" data-t="nav_folio">Folio</a>
+    <a href="#articles" data-nav="articles" data-t="nav_articles">Evolutions legales</a>
+    <div class="mobile-lang">
+        <button class="btn-secondary" data-lang="fr" style="padding:8px 18px;border-radius:8px;font-size:14px">FR</button>
+        <button class="btn-secondary" data-lang="en" style="padding:8px 18px;border-radius:8px;font-size:14px">EN</button>
+    </div>
 </div>
 
-<section class="hero">
-    <h1 id="hero-title"></h1>
-    <p id="hero-subtitle"></p>
-</section>
+<!-- ── Page: Home ── -->
+<div class="page" id="page-home">
+    <section class="hero">
+        <h1 id="hero-title"></h1>
+        <p id="hero-subtitle"></p>
+    </section>
+    <div class="services-grid" id="services-grid"></div>
+    <section class="about">
+        <h2 id="about-title"></h2>
+        <div class="about-text" id="about-text"></div>
+    </section>
+</div>
 
-<section class="about">
-    <h2 id="about-title"></h2>
-    <div class="about-text" id="about-text"></div>
-</section>
+<!-- ── Page: Diagnostic ── -->
+<div class="page" id="page-diagnostic">
+    <div class="content-wrap" id="diagnostic-content"></div>
+</div>
+
+<!-- ── Page: Conformite ── -->
+<div class="page" id="page-conformite">
+    <div class="content-wrap">
+        <h1 id="conformite-title"></h1>
+        <div class="about-text" id="conformite-text" style="white-space:pre-line"></div>
+    </div>
+</div>
+
+<!-- ── Page: Chatbot ── -->
+<div class="page" id="page-chatbot">
+    <div class="coming-soon-card">
+        <h2 id="chatbot-title"></h2>
+        <p id="chatbot-text"></p>
+    </div>
+</div>
+
+<!-- ── Page: Folio ── -->
+<div class="page" id="page-folio">
+    <div class="content-wrap">
+        <h1 id="folio-title"></h1>
+        <p class="subtitle" id="folio-subtitle"></p>
+        <div class="folio-grid" id="folio-grid"></div>
+    </div>
+</div>
+
+<!-- ── Page: Articles ── -->
+<div class="page" id="page-articles">
+    <div class="content-wrap">
+        <h1 id="articles-title"></h1>
+        <p class="subtitle" id="articles-subtitle"></p>
+        <div id="articles-list"></div>
+    </div>
+</div>
 
 <footer id="footer-text"></footer>
 
+<!-- ── Admin bar ── -->
 <div class="admin-bar" id="admin-bar">
     <span style="color:var(--accent);font-weight:600">Admin</span>
     <button id="btn-edit-services">Services</button>
     <button id="btn-save-all">Enregistrer</button>
     <span style="flex:1"></span>
-    <span id="save-status" style="color:var(--accent)"></span>
+    <span id="save-status" style="color:var(--accent)" aria-live="polite"></span>
 </div>
 
 <div class="overlay" id="overlay"></div>
-<div class="service-editor" id="service-editor">
+<div class="service-editor" id="service-editor" role="dialog" aria-modal="true" aria-label="Modifier les services">
     <h3>Services</h3>
     <div id="svc-list"></div>
     <button class="btn-add-svc" id="btn-add-svc">+ Ajouter un service</button>
@@ -293,60 +937,711 @@ footer {
 <script>
 'use strict';
 
-const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+/* ── Helpers ── */
+const esc = s => {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+};
 const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
+/* ── i18n ── */
+const T = {
+    fr: {
+        nav_home: 'Accueil',
+        nav_diagnostic: 'Diagnostic flash',
+        nav_diagnostic_full: 'Diagnostic complet',
+        nav_conformite: 'Mise en conformité',
+        nav_chatbot: 'Chatbot conformité',
+        nav_folio: 'Folio',
+        nav_articles: 'Évolutions légales',
+        hero_subtitle_default: 'Conformité, diagnostic et accompagnement pour TPE/PME',
+        coming_soon: 'Prochainement',
+        coming_soon_text: 'Le chatbot conformité est en cours de développement. Il vous permettra de poser vos questions sur le droit du travail français en temps réel.',
+        contact_title: 'Besoin d’accompagnement ?',
+        contact_subtitle: 'Laissez vos coordonnées, nous vous recontacterons.',
+        contact_nom: 'Nom',
+        contact_entreprise: 'Entreprise',
+        contact_telephone: 'Téléphone',
+        contact_email: 'Email',
+        contact_linkedin: 'Lien LinkedIn',
+        contact_message: 'Message (optionnel)',
+        contact_consent: 'J’accepte que mes données soient utilisées pour me recontacter (RGPD)',
+        contact_submit: 'Envoyer',
+        contact_success: 'Message envoyé ! Nous vous recontacterons rapidement.',
+        contact_error_name: 'Le nom est requis',
+        contact_error_contact: 'Au moins un moyen de contact est requis (téléphone, email ou LinkedIn)',
+        contact_error_consent: 'Veuillez accepter les conditions',
+        folio_title: 'Nos services',
+        folio_subtitle: 'Aperçu de nos outils et livrables',
+        articles_title: 'Évolutions légales',
+        articles_subtitle: 'Veille juridique et actualités du droit du travail',
+        articles_empty: 'Aucun article publié pour le moment.',
+        conformite_title: 'Mise en conformité',
+        conformite_placeholder: 'Nous vous accompagnons dans la mise en conformité de vos obligations RH. Contactez-nous pour un devis personnalisé.',
+        about_default: 'À propos',
+        footer_default: '© 2026 — Tous droits réservés',
+        headcount_label: 'salariés',
+        diag_context_title: 'Contexte de votre entreprise',
+        diag_submit: 'Voir les résultats',
+        diag_next: 'Suivant',
+        diag_prev: 'Précédent',
+        diag_results_title: 'Résultats du diagnostic',
+        diag_block_prefix: 'Diagnostic : ',
+    },
+    en: {
+        nav_home: 'Home',
+        nav_diagnostic: 'Quick Diagnostic',
+        nav_diagnostic_full: 'Full Diagnostic',
+        nav_conformite: 'Compliance',
+        nav_chatbot: 'Compliance Chatbot',
+        nav_folio: 'Portfolio',
+        nav_articles: 'Legal Updates',
+        hero_subtitle_default: 'Compliance, diagnostics and support for SMEs in France',
+        coming_soon: 'Coming Soon',
+        coming_soon_text: 'The compliance chatbot is under development. It will allow you to ask questions about French labor law in real time.',
+        contact_title: 'Need support?',
+        contact_subtitle: 'Leave your details, we will get back to you.',
+        contact_nom: 'Name',
+        contact_entreprise: 'Company',
+        contact_telephone: 'Phone',
+        contact_email: 'Email',
+        contact_linkedin: 'LinkedIn Profile',
+        contact_message: 'Message (optional)',
+        contact_consent: 'I agree to my data being used to contact me back (GDPR)',
+        contact_submit: 'Send',
+        contact_success: 'Message sent! We will get back to you shortly.',
+        contact_error_name: 'Name is required',
+        contact_error_contact: 'At least one contact method is required (phone, email, or LinkedIn)',
+        contact_error_consent: 'Please accept the terms',
+        folio_title: 'Our Services',
+        folio_subtitle: 'Preview of our tools and deliverables',
+        articles_title: 'Legal Updates',
+        articles_subtitle: 'Legal news and updates on French labor law',
+        articles_empty: 'No articles published yet.',
+        conformite_title: 'Compliance Support',
+        conformite_placeholder: 'We support you in bringing your HR obligations into compliance. Contact us for a personalized quote.',
+        about_default: 'About',
+        footer_default: '© 2026 — All rights reserved',
+        headcount_label: 'employees',
+        diag_context_title: 'About your company',
+        diag_submit: 'View results',
+        diag_next: 'Next',
+        diag_prev: 'Previous',
+        diag_results_title: 'Diagnostic results',
+        diag_block_prefix: 'Diagnostic: ',
+    }
+};
+
+let currentLang = (function() {
+    try {
+        const stored = localStorage.getItem('vitrine_lang');
+        if (stored === 'en' || stored === 'fr') return stored;
+    } catch(e) {}
+    return navigator.language.startsWith('en') ? 'en' : 'fr';
+})();
+
+function t(key) { return (T[currentLang] && T[currentLang][key]) || (T.fr[key]) || key; }
+
+function applyTranslations() {
+    document.documentElement.lang = currentLang;
+    for (const el of $$('[data-t]')) {
+        const key = el.dataset.t;
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = t(key);
+        } else {
+            el.textContent = t(key);
+        }
+    }
+    /* Update lang toggle active state */
+    for (const btn of $$('.lang-toggle button, .mobile-lang button')) {
+        btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    }
+}
+
+function setLang(lang) {
+    currentLang = lang;
+    try { localStorage.setItem('vitrine_lang', lang); } catch(e) {}
+    applyTranslations();
+    renderHome();
+    renderConformite();
+    renderChatbot();
+    renderFolio();
+    loadArticles();
+    loadQuestionnaireNav();
+}
+
+/* ── API ── */
 const API = window.__HUB_API || 'https://hr-hub.duckdns.org';
 
 let content = {};
+let questionnaire = null;
 let isAdmin = false;
 let adminToken = '';
 let editServices = [];
 
-async function init() {
-    const params = new URLSearchParams(location.search);
-    adminToken = params.get('admin') || '';
-
-    if (adminToken) {
-        try {
-            const res = await fetch(`${API}/api/site/admin-check?token=${encodeURIComponent(adminToken)}`);
-            if (res.ok) {
-                const d = await res.json();
-                isAdmin = d.admin;
-            }
-        } catch (e) {
-            console.error('Admin check failed:', e);
-        }
-    }
-
-    try {
-        const res = await fetch(`${API}/api/site/content`);
-        if (res.ok) content = await res.json();
-    } catch (e) {
-        console.error('Content fetch failed:', e);
-    }
-
-    render();
-    if (isAdmin) enableAdmin();
+/* ── Markdown renderer ── */
+function md(text) {
+    if (!text) return '';
+    let html = esc(text);
+    /* Code blocks */
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+        return '<pre><code>' + code.trim() + '</code></pre>';
+    });
+    /* Inline code */
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    /* Headings */
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    /* Bold and italic */
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    /* Unordered lists */
+    html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+    /* Ordered lists */
+    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    /* Paragraphs — double newlines */
+    html = html.replace(/\n\n+/g, '</p><p>');
+    html = '<p>' + html + '</p>';
+    /* Clean up empty paragraphs */
+    html = html.replace(/<p>\s*<\/p>/g, '');
+    html = html.replace(/<p>\s*(<h[123]>)/g, '$1');
+    html = html.replace(/(<\/h[123]>)\s*<\/p>/g, '$1');
+    html = html.replace(/<p>\s*(<pre>)/g, '$1');
+    html = html.replace(/(<\/pre>)\s*<\/p>/g, '$1');
+    html = html.replace(/<p>\s*(<ul>)/g, '$1');
+    html = html.replace(/(<\/ul>)\s*<\/p>/g, '$1');
+    return html;
 }
 
-function render() {
-    renderServices();
+/* ── Router ── */
+function getRoute() {
+    const hash = location.hash.slice(1) || 'home';
+    const parts = hash.split('/');
+    return { page: parts[0], param: parts.slice(1).join('/') };
+}
+
+function navigate(hash) {
+    location.hash = hash;
+}
+
+function handleRoute() {
+    const { page, param } = getRoute();
+    const pages = ['home', 'diagnostic', 'conformite', 'chatbot', 'folio', 'articles'];
+    for (const p of pages) {
+        const el = $(`#page-${p}`);
+        if (el) el.classList.toggle('active', p === page);
+    }
+    /* Update nav active states */
+    for (const a of $$('.nav-links a[data-nav], .mobile-nav a[data-nav]')) {
+        a.classList.toggle('active', a.dataset.nav === page);
+    }
+    const diagToggle = $('#diag-toggle');
+    if (diagToggle) diagToggle.classList.toggle('active', page === 'diagnostic');
+
+    /* Close mobile nav on navigate */
+    closeMobileNav();
+    closeDropdown();
+
+    /* Page-specific logic */
+    if (page === 'diagnostic') {
+        startDiagnostic(param || 'full');
+    } else if (page === 'articles') {
+        loadArticles();
+    }
+    window.scrollTo(0, 0);
+}
+
+/* ── Mobile nav ── */
+function closeMobileNav() {
+    $('#mobile-nav').classList.remove('open');
+    $('#hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+/* ── Dropdown ── */
+let dropdownTimeout = null;
+function openDropdown() {
+    clearTimeout(dropdownTimeout);
+    $('#diag-dropdown').classList.add('open');
+}
+function closeDropdown() {
+    dropdownTimeout = setTimeout(() => {
+        $('#diag-dropdown').classList.remove('open');
+    }, 150);
+}
+
+/* ── Contact form generator ── */
+function createContactForm(diagnosticBlock) {
+    const formId = 'cf-' + Math.random().toString(36).slice(2, 8);
+    return `
+    <div class="contact-form-wrap" id="${esc(formId)}">
+        <h3>${esc(t('contact_title'))}</h3>
+        <p class="cf-subtitle">${esc(t('contact_subtitle'))}</p>
+        <div class="cf-error" id="${esc(formId)}-error"></div>
+        <div class="cf-success" id="${esc(formId)}-success">${esc(t('contact_success'))}</div>
+        <form id="${esc(formId)}-form" onsubmit="return false">
+            <div class="cf-field">
+                <label>${esc(t('contact_nom'))} *</label>
+                <input type="text" name="nom" required>
+            </div>
+            <div class="cf-field">
+                <label>${esc(t('contact_entreprise'))}</label>
+                <input type="text" name="entreprise">
+            </div>
+            <div class="cf-field">
+                <label>${esc(t('contact_telephone'))}</label>
+                <input type="tel" name="telephone">
+            </div>
+            <div class="cf-field">
+                <label>${esc(t('contact_email'))}</label>
+                <input type="email" name="email">
+            </div>
+            <div class="cf-field">
+                <label>${esc(t('contact_linkedin'))}</label>
+                <input type="url" name="linkedin" placeholder="https://linkedin.com/in/...">
+            </div>
+            <div class="cf-field">
+                <label>${esc(t('contact_message'))}</label>
+                <textarea name="message" rows="3"></textarea>
+            </div>
+            <div class="cf-check">
+                <input type="checkbox" id="${esc(formId)}-consent" name="consent">
+                <label for="${esc(formId)}-consent">${esc(t('contact_consent'))}</label>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%">${esc(t('contact_submit'))}</button>
+        </form>
+    </div>`;
+
+    /* Note: event binding happens after insertion via bindContactForm() */
+}
+
+function bindContactForm(wrapEl, diagnosticBlock) {
+    const form = wrapEl.querySelector('form');
+    const errorEl = wrapEl.querySelector('.cf-error');
+    const successEl = wrapEl.querySelector('.cf-success');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.classList.remove('show');
+        const fd = new FormData(form);
+        const nom = (fd.get('nom') || '').trim();
+        const entreprise = (fd.get('entreprise') || '').trim();
+        const telephone = (fd.get('telephone') || '').trim();
+        const email = (fd.get('email') || '').trim();
+        const linkedin = (fd.get('linkedin') || '').trim();
+        const message = (fd.get('message') || '').trim();
+        const consent = form.querySelector('[name="consent"]').checked;
+
+        if (!nom) {
+            errorEl.textContent = t('contact_error_name');
+            errorEl.classList.add('show');
+            return;
+        }
+        if (!telephone && !email && !linkedin) {
+            errorEl.textContent = t('contact_error_contact');
+            errorEl.classList.add('show');
+            return;
+        }
+        if (!consent) {
+            errorEl.textContent = t('contact_error_consent');
+            errorEl.classList.add('show');
+            return;
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '...';
+
+        try {
+            const body = { nom, entreprise, telephone, email, linkedin, message, consent: true };
+            if (diagnosticBlock) body.diagnostic_block = diagnosticBlock;
+            const res = await fetch(`${API}/api/contacts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            form.style.display = 'none';
+            successEl.classList.add('show');
+        } catch (err) {
+            console.error('Contact submit failed:', err);
+            errorEl.textContent = 'Erreur: ' + err.message;
+            errorEl.classList.add('show');
+            submitBtn.disabled = false;
+            submitBtn.textContent = t('contact_submit');
+        }
+    });
+}
+
+/* ── Render: Home ── */
+function renderHome() {
     $('#hero-title').textContent = content.hero_title || '';
-    $('#hero-subtitle').textContent = content.hero_subtitle || '';
-    $('#about-title').textContent = content.about_title || '';
+    $('#hero-subtitle').textContent = content.hero_subtitle || t('hero_subtitle_default');
+    $('#about-title').textContent = content.about_title || t('about_default');
     $('#about-text').textContent = content.about_text || '';
-    $('#footer-text').textContent = content.footer_text || '';
+    renderServices();
 }
 
 function renderServices() {
-    const c = $('#services-banner');
+    const c = $('#services-grid');
     const svcs = content.services || [];
+    if (svcs.length === 0) {
+        c.style.display = 'none';
+        return;
+    }
+    c.style.display = '';
     c.innerHTML = svcs.map(s =>
         `<div class="service-card"><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></div>`
     ).join('');
 }
 
+/* ── Render: Conformite ── */
+function renderConformite() {
+    $('#conformite-title').textContent = t('conformite_title');
+    $('#conformite-text').textContent = content.conformite_text || t('conformite_placeholder');
+}
+
+/* ── Render: Chatbot ── */
+function renderChatbot() {
+    $('#chatbot-title').textContent = t('coming_soon');
+    $('#chatbot-text').textContent = t('coming_soon_text');
+}
+
+/* ── Render: Folio ── */
+function renderFolio() {
+    $('#folio-title').textContent = t('folio_title');
+    $('#folio-subtitle').textContent = t('folio_subtitle');
+    const items = [
+        { label: 'Diagnostic Flash', desc: currentLang === 'fr' ? 'Outil d\'auto-diagnostic en ligne' : 'Online self-diagnostic tool' },
+        { label: currentLang === 'fr' ? 'Rapport de conformité' : 'Compliance Report', desc: currentLang === 'fr' ? 'Livrable détaillé avec plan d\'action' : 'Detailed deliverable with action plan' },
+        { label: currentLang === 'fr' ? 'Grille DUERP' : 'DUERP Grid', desc: currentLang === 'fr' ? 'Document unique d\'évaluation des risques' : 'Occupational risk assessment document' },
+        { label: currentLang === 'fr' ? 'Entretien professionnel' : 'Professional Interview', desc: currentLang === 'fr' ? 'Trame et suivi des entretiens' : 'Interview framework and tracking' },
+    ];
+    $('#folio-grid').innerHTML = items.map(it =>
+        `<div class="folio-item">
+            <div class="folio-thumb">${esc(it.desc)}</div>
+            <div class="folio-label">${esc(it.label)}</div>
+        </div>`
+    ).join('');
+}
+
+/* ── Render: Articles ── */
+let articlesCache = null;
+async function loadArticles() {
+    if (getRoute().page !== 'articles') return;
+    const wrap = $('#articles-list');
+    const titleEl = $('#articles-title');
+    const subEl = $('#articles-subtitle');
+    titleEl.textContent = t('articles_title');
+    subEl.textContent = t('articles_subtitle');
+
+    wrap.innerHTML = '<div class="loading-center"><div class="spinner"></div></div>';
+
+    try {
+        const url = currentLang === 'en' ? `${API}/api/articles?lang=en` : `${API}/api/articles`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        articlesCache = await res.json();
+    } catch (e) {
+        console.error('Articles fetch failed:', e);
+        if (!articlesCache) articlesCache = [];
+    }
+
+    const articles = Array.isArray(articlesCache) ? articlesCache : (articlesCache.articles || []);
+    if (articles.length === 0) {
+        wrap.innerHTML = `<div class="empty-state">${esc(t('articles_empty'))}</div>`;
+        return;
+    }
+
+    wrap.innerHTML = articles.map(a => {
+        const date = a.published_at || a.created_at || '';
+        const tags = (a.tags || []).map(tag => `<span class="article-tag">${esc(tag)}</span>`).join(' ');
+        const bodyHtml = md(a.content || a.body || '');
+        return `<article class="article-item">
+            <div class="article-meta">
+                <span class="article-date">${esc(date)}</span>
+                ${tags}
+            </div>
+            <h3>${esc(a.title || '')}</h3>
+            <div class="article-body">${bodyHtml}</div>
+        </article>`;
+    }).join('');
+}
+
+/* ── Questionnaire / Diagnostic ── */
+async function loadQuestionnaire() {
+    try {
+        const langPath = currentLang === 'en' ? '/en' : '';
+        const res = await fetch(`${API}/api/questionnaire${langPath}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        questionnaire = await res.json();
+    } catch (e) {
+        console.error('Questionnaire fetch failed:', e);
+        questionnaire = null;
+    }
+}
+
+async function loadQuestionnaireNav() {
+    await loadQuestionnaire();
+    renderDiagDropdown();
+}
+
+function renderDiagDropdown() {
+    const dd = $('#diag-dropdown');
+    const mobileSub = $('#mobile-diag-sub');
+
+    if (!questionnaire || !questionnaire.blocks) {
+        dd.innerHTML = `<a href="#diagnostic/full">${esc(t('nav_diagnostic_full'))}</a>`;
+        mobileSub.innerHTML = '';
+        return;
+    }
+
+    const blocks = questionnaire.blocks;
+    const blockIds = Object.keys(blocks);
+
+    let html = `<a href="#diagnostic/full"><strong>${esc(t('nav_diagnostic_full'))}</strong></a>`;
+    html += '<div class="dd-sep"></div>';
+    for (const id of blockIds) {
+        const b = blocks[id];
+        const title = b.title || id;
+        const cond = b.applicable_si || '';
+        html += `<a href="#diagnostic/${esc(id)}">
+            ${esc(title)}
+            ${cond ? `<span class="dd-sub">${esc(cond)}</span>` : ''}
+        </a>`;
+    }
+    dd.innerHTML = html;
+
+    /* Mobile sub-items */
+    mobileSub.innerHTML = blockIds.map(id => {
+        const b = blocks[id];
+        return `<a href="#diagnostic/${esc(id)}">${esc(b.title || id)}</a>`;
+    }).join('');
+}
+
+/* ── Diagnostic flow ── */
+let diagState = {
+    mode: 'full',
+    blockId: null,
+    answers: {},
+    step: 0,
+    questions: [],
+    contextQuestions: [],
+};
+
+function startDiagnostic(param) {
+    const wrap = $('#diagnostic-content');
+
+    if (!questionnaire || !questionnaire.blocks) {
+        wrap.innerHTML = '<div class="loading-center"><div class="spinner"></div></div>';
+        loadQuestionnaire().then(() => {
+            if (questionnaire) startDiagnostic(param);
+            else wrap.innerHTML = `<div class="empty-state">Impossible de charger le questionnaire.</div>`;
+        });
+        return;
+    }
+
+    const blocks = questionnaire.blocks;
+
+    if (param === 'full') {
+        diagState.mode = 'full';
+        diagState.blockId = null;
+    } else if (blocks[param]) {
+        diagState.mode = 'single';
+        diagState.blockId = param;
+    } else {
+        diagState.mode = 'full';
+        diagState.blockId = null;
+    }
+
+    diagState.answers = {};
+    diagState.step = 0;
+
+    /* Collect context questions */
+    diagState.contextQuestions = questionnaire.context_questions || [];
+
+    /* Collect block questions */
+    if (diagState.mode === 'single') {
+        const b = blocks[diagState.blockId];
+        diagState.questions = (b.questions || []).map(q => ({ ...q, _block: diagState.blockId }));
+    } else {
+        diagState.questions = [];
+        for (const id of Object.keys(blocks)) {
+            const b = blocks[id];
+            for (const q of (b.questions || [])) {
+                diagState.questions.push({ ...q, _block: id });
+            }
+        }
+    }
+
+    renderDiagStep();
+}
+
+function renderDiagStep() {
+    const wrap = $('#diagnostic-content');
+    const allQ = [...diagState.contextQuestions, ...diagState.questions];
+    const total = allQ.length;
+    const step = diagState.step;
+
+    if (step >= total) {
+        submitDiagnostic();
+        return;
+    }
+
+    const q = allQ[step];
+    const isContext = step < diagState.contextQuestions.length;
+    const progress = Math.round(((step) / total) * 100);
+
+    const title = isContext
+        ? t('diag_context_title')
+        : (diagState.mode === 'single'
+            ? t('diag_block_prefix') + esc(questionnaire.blocks[diagState.blockId]?.title || diagState.blockId)
+            : t('nav_diagnostic_full'));
+
+    const currentAnswer = diagState.answers[q.id] != null ? diagState.answers[q.id] : null;
+
+    let optionsHtml = '';
+    if (q.type === 'number') {
+        const val = currentAnswer != null ? currentAnswer : '';
+        optionsHtml = `<div class="cf-field" style="margin:0">
+            <input type="number" min="0" id="diag-num-input" value="${esc(String(val))}"
+                style="max-width:200px" placeholder="${esc(t('headcount_label'))}">
+        </div>`;
+    } else {
+        const options = q.options || [
+            { value: 'oui', label: currentLang === 'fr' ? 'Oui' : 'Yes' },
+            { value: 'non', label: currentLang === 'fr' ? 'Non' : 'No' },
+        ];
+        optionsHtml = '<div class="diag-options">' + options.map(o => {
+            const sel = currentAnswer === o.value ? ' selected' : '';
+            return `<button class="diag-opt${sel}" data-val="${esc(String(o.value))}">${esc(o.label || o.value)}</button>`;
+        }).join('') + '</div>';
+    }
+
+    wrap.innerHTML = `
+        <h1 style="margin-bottom:var(--space-md)">${title}</h1>
+        <div class="diag-progress">
+            <div class="diag-progress-bar"><div class="diag-progress-fill" style="width:${progress}%"></div></div>
+            <span class="diag-progress-text">${step + 1} / ${total}</span>
+        </div>
+        <div class="diag-question">
+            <h3>${esc(q.text || q.label || q.id)}</h3>
+            ${optionsHtml}
+        </div>
+        <div class="diag-nav">
+            ${step > 0 ? `<button class="btn-secondary" id="diag-prev">${esc(t('diag_prev'))}</button>` : ''}
+            <button class="btn-primary" id="diag-next" ${currentAnswer == null ? 'disabled' : ''}>${step === total - 1 ? esc(t('diag_submit')) : esc(t('diag_next'))}</button>
+        </div>`;
+
+    /* Bind events */
+    for (const btn of wrap.querySelectorAll('.diag-opt')) {
+        btn.addEventListener('click', () => {
+            diagState.answers[q.id] = btn.dataset.val;
+            for (const b of wrap.querySelectorAll('.diag-opt')) b.classList.remove('selected');
+            btn.classList.add('selected');
+            const nextBtn = $('#diag-next');
+            if (nextBtn) nextBtn.disabled = false;
+        });
+    }
+
+    const numInput = wrap.querySelector('#diag-num-input');
+    if (numInput) {
+        numInput.addEventListener('input', () => {
+            const v = parseInt(numInput.value);
+            if (!isNaN(v) && v >= 0) {
+                diagState.answers[q.id] = v;
+                const nextBtn = $('#diag-next');
+                if (nextBtn) nextBtn.disabled = false;
+            }
+        });
+        numInput.focus();
+    }
+
+    const nextBtn = $('#diag-next');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (diagState.answers[q.id] == null) return;
+            diagState.step++;
+            renderDiagStep();
+        });
+    }
+    const prevBtn = $('#diag-prev');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            diagState.step = Math.max(0, diagState.step - 1);
+            renderDiagStep();
+        });
+    }
+}
+
+async function submitDiagnostic() {
+    const wrap = $('#diagnostic-content');
+    wrap.innerHTML = '<div class="loading-center"><div class="spinner"></div></div>';
+
+    try {
+        const body = { answers: diagState.answers };
+        if (diagState.mode === 'single' && diagState.blockId) {
+            body.block = diagState.blockId;
+        }
+        const res = await fetch(`${API}/api/diagnostic`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        renderDiagResults(data);
+    } catch (e) {
+        console.error('Diagnostic submit failed:', e);
+        wrap.innerHTML = `<div class="empty-state">Erreur: ${esc(e.message)}</div>`;
+    }
+}
+
+function renderDiagResults(data) {
+    const wrap = $('#diagnostic-content');
+    const results = data.results || data.blocks || data;
+
+    let html = `<h1 style="margin-bottom:var(--space-lg)">${esc(t('diag_results_title'))}</h1>`;
+
+    const entries = Array.isArray(results) ? results : Object.entries(results).map(([k, v]) => ({ id: k, ...v }));
+
+    for (const r of entries) {
+        const status = (r.status || r.resultat || 'non-applicable').toLowerCase().replace(/\s+/g, '-');
+        const cssClass = status.includes('conforme') && !status.includes('non') ? 'conforme'
+                       : status.includes('non') ? 'non-conforme'
+                       : 'non-applicable';
+        const title = r.title || r.bloc || r.id || '';
+        const detail = r.detail || r.message || r.description || '';
+
+        html += `<div class="diag-result ${cssClass}">
+            <span class="result-badge ${cssClass}">${esc(status)}</span>
+            <h3>${esc(title)}</h3>
+            ${detail ? `<p>${esc(detail)}</p>` : ''}
+        </div>`;
+    }
+
+    /* Contact form at the end */
+    const blockLabel = diagState.mode === 'single' ? diagState.blockId : 'diagnostic_complet';
+    html += createContactForm(blockLabel);
+
+    wrap.innerHTML = html;
+
+    /* Bind the contact form */
+    const cfWrap = wrap.querySelector('.contact-form-wrap');
+    if (cfWrap) bindContactForm(cfWrap, blockLabel);
+}
+
+/* ── Footer ── */
+function renderFooter() {
+    $('#footer-text').textContent = content.footer_text || t('footer_default');
+}
+
+/* ── Admin ── */
 function enableAdmin() {
     $('#admin-bar').classList.add('visible');
     document.body.style.paddingBottom = '52px';
@@ -362,12 +1657,15 @@ function enableAdmin() {
     $('#svc-save').addEventListener('click', applyServices);
     $('#svc-cancel').addEventListener('click', closeServiceEditor);
     $('#overlay').addEventListener('click', closeServiceEditor);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeServiceEditor();
+    });
     $('#btn-add-svc').addEventListener('click', () => {
         editServices.push({ title: '', desc: '' });
         renderServiceEditor();
     });
 
-    showStatus('Mode admin actif — cliquez sur un texte pour le modifier', 4000);
+    showStatus('Mode admin actif', 4000);
 }
 
 function showStatus(msg, duration) {
@@ -391,7 +1689,7 @@ async function saveAll() {
             body: JSON.stringify(content),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        showStatus('Enregistré ✓', 2500);
+        showStatus('Enregistré', 2500);
     } catch (e) {
         console.error('Save failed:', e);
         showStatus('Erreur : ' + e.message, 5000);
@@ -438,6 +1736,117 @@ function applyServices() {
     content.services = editServices.filter(s => s.title.trim() || s.desc.trim());
     renderServices();
     closeServiceEditor();
+}
+
+/* ── Init ── */
+async function init() {
+    /* Admin token from URL */
+    const params = new URLSearchParams(location.search);
+    adminToken = params.get('admin') || '';
+
+    if (adminToken) {
+        const cleanUrl = new URL(location);
+        cleanUrl.searchParams.delete('admin');
+        history.replaceState(null, '', cleanUrl);
+    }
+
+    if (adminToken) {
+        try {
+            const res = await fetch(`${API}/api/site/admin-check`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Token': adminToken },
+            });
+            if (res.ok) {
+                const d = await res.json();
+                isAdmin = d.admin;
+            }
+        } catch (e) {
+            console.error('Admin check failed:', e);
+        }
+    }
+
+    /* Fetch site content */
+    try {
+        const res = await fetch(`${API}/api/site/content`);
+        if (res.ok) content = await res.json();
+    } catch (e) {
+        console.error('Content fetch failed:', e);
+    }
+
+    /* Apply language */
+    applyTranslations();
+
+    /* Render static pages */
+    renderHome();
+    renderConformite();
+    renderChatbot();
+    renderFolio();
+    renderFooter();
+
+    /* Load questionnaire for nav dropdown */
+    loadQuestionnaireNav();
+
+    /* Admin mode */
+    if (isAdmin) enableAdmin();
+
+    /* Setup navigation */
+    setupNav();
+
+    /* Initial route */
+    handleRoute();
+}
+
+function setupNav() {
+    /* Hash routing */
+    window.addEventListener('hashchange', handleRoute);
+
+    /* Brand click */
+    $('#nav-brand').addEventListener('click', (e) => {
+        e.preventDefault();
+        navigate('home');
+    });
+
+    /* Hamburger toggle */
+    $('#hamburger').addEventListener('click', () => {
+        const nav = $('#mobile-nav');
+        const btn = $('#hamburger');
+        const open = nav.classList.toggle('open');
+        btn.classList.toggle('open');
+        document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    /* Mobile nav link clicks */
+    for (const a of $$('#mobile-nav a')) {
+        a.addEventListener('click', () => closeMobileNav());
+    }
+
+    /* Desktop dropdown hover */
+    const diagLi = $('#diag-toggle').parentElement;
+    diagLi.addEventListener('mouseenter', openDropdown);
+    diagLi.addEventListener('mouseleave', closeDropdown);
+    $('#diag-dropdown').addEventListener('mouseenter', openDropdown);
+    $('#diag-dropdown').addEventListener('mouseleave', closeDropdown);
+
+    /* Dropdown toggle click (for keyboard / touch) */
+    $('#diag-toggle').addEventListener('click', () => {
+        const dd = $('#diag-dropdown');
+        dd.classList.toggle('open');
+    });
+
+    /* Language toggle */
+    for (const btn of $$('.lang-toggle button, .mobile-lang button')) {
+        btn.addEventListener('click', () => {
+            setLang(btn.dataset.lang);
+        });
+    }
+
+    /* Close dropdown on outside click */
+    document.addEventListener('click', (e) => {
+        const diagLi = $('#diag-toggle').parentElement;
+        if (!diagLi.contains(e.target)) {
+            $('#diag-dropdown').classList.remove('open');
+        }
+    });
 }
 
 init();

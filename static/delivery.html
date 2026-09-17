@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Livraison — Consultant RH</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -13,7 +14,7 @@
     --bg-card: #161722;
     --fg: #f0f1f4;
     --fg-muted: #8b8fa3;
-    --fg-dim: #5c5f73;
+    --fg-dim: #7d8094;
     --border: #23253a;
     --accent: #4d8fcc;
     --accent-hover: #5da0dd;
@@ -78,69 +79,203 @@ body {
 .btn-download:disabled { opacity: .4; cursor: default; }
 .error { color: var(--rouge); }
 .expired { color: var(--rouge); }
+.lang-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    font-size: 12px;
+    z-index: 10;
+}
+.lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--fg-muted);
+    padding: 6px 12px;
+    cursor: pointer;
+    font: 400 12px/1 var(--font-body);
+    transition: background 200ms, color 200ms;
+}
+.lang-toggle button.active {
+    background: var(--accent);
+    color: #fff;
+}
     </style>
 </head>
 <body>
+<div class="lang-toggle" id="lang-toggle">
+    <button id="btn-fr">FR</button>
+    <button id="btn-en">EN</button>
+</div>
 <div class="card" id="card">
-    <h1>Espace de livraison</h1>
-    <p>Vos documents de diagnostic RH sont disponibles au t&eacute;l&eacute;chargement.</p>
-    <div class="status" id="status">V&eacute;rification du lien&hellip;</div>
+    <h1 id="page-title">Espace de livraison</h1>
+    <p id="page-subtitle">Vos documents de diagnostic RH sont disponibles au t&eacute;l&eacute;chargement.</p>
+    <div class="status" id="status" aria-live="polite">V&eacute;rification du lien&hellip;</div>
 </div>
 <script>
 'use strict';
 
-const API = window.__HUB_API || 'https://hr-hub.duckdns.org';
+/* ── i18n ─────────────────────────────────────────────── */
+
+const TRANSLATIONS = {
+    fr: {
+        pageTitle:  'Livraison — Consultant RH',
+        title:      'Espace de livraison',
+        subtitle:   'Vos documents de diagnostic RH sont disponibles au téléchargement.',
+        verifying:  'Vérification du lien…',
+        invalid:    'Lien invalide.',
+        expired:    'Ce lien est expiré ou a été révoqué.',
+        download:   'Télécharger',
+        preparing:  'Préparation…',
+        started:    'Téléchargement lancé',
+        error:      'Une erreur est survenue. Veuillez réessayer plus tard.',
+        fmt_html:   'HTML (interactif)',
+        fmt_md:     'Markdown',
+        fmt_docx:   'Word (.docx)',
+    },
+    en: {
+        pageTitle:  'Delivery — HR Consultant',
+        title:      'Delivery Space',
+        subtitle:   'Your HR diagnostic documents are available for download.',
+        verifying:  'Verifying link…',
+        invalid:    'Invalid link.',
+        expired:    'This link has expired or has been revoked.',
+        download:   'Download',
+        preparing:  'Preparing…',
+        started:    'Download started',
+        error:      'An error occurred. Please try again later.',
+        fmt_html:   'HTML (interactive)',
+        fmt_md:     'Markdown',
+        fmt_docx:   'Word (.docx)',
+    }
+};
+
+let lang = localStorage.getItem('lang') || (navigator.language.startsWith('fr') ? 'fr' : 'en');
+if (lang !== 'fr' && lang !== 'en') lang = 'en';
+
+function t(key) { return TRANSLATIONS[lang][key] || TRANSLATIONS.fr[key] || key; }
+
+/* ── State ────────────────────────────────────────────── */
+
+let pageState   = 'verifying';   // verifying | invalid | expired | error | formats
+let sessionData = null;
+
+const API   = window.__HUB_API || 'https://hr-hub.duckdns.org';
 const token = location.pathname.split('/d/')[1] || '';
 
-const FMT_LABELS = { html: 'HTML (interactif)', md: 'Markdown', docx: 'Word (.docx)' };
+/* ── Rendering ────────────────────────────────────────── */
 
-async function init() {
-    const status = document.getElementById('status');
+function applyLang() {
+    document.documentElement.lang = lang;
+    document.title = t('pageTitle');
+    document.getElementById('page-title').textContent    = t('title');
+    document.getElementById('page-subtitle').textContent = t('subtitle');
+    document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    renderStatus();
+}
 
-    if (!token) {
-        status.innerHTML = '<span class="error">Lien invalide.</span>';
-        return;
+function renderStatus() {
+    var el = document.getElementById('status');
+    switch (pageState) {
+        case 'verifying':
+            el.textContent = t('verifying');
+            break;
+        case 'invalid':
+            el.innerHTML = '<span class="error">' + t('invalid') + '</span>';
+            break;
+        case 'expired':
+            el.innerHTML = '<span class="expired">' + t('expired') + '</span>';
+            break;
+        case 'error':
+            el.innerHTML = '<span class="error">' + t('error') + '</span>';
+            break;
+        case 'formats':
+            if (sessionData) renderFormats(sessionData);
+            break;
     }
+}
 
-    const res = await fetch(`${API}/api/delivery/validate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-    });
+function renderFormats(session) {
+    var el      = document.getElementById('status');
+    var formats = session.formats || ['html', 'md', 'docx'];
+    var fmtKeys = { html: 'fmt_html', md: 'fmt_md', docx: 'fmt_docx' };
 
-    if (!res.ok) {
-        status.innerHTML = '<span class="expired">Ce lien est expiré ou a été révoqué.</span>';
-        return;
-    }
-
-    const data = await res.json();
-    const session = data.session;
-    const formats = session.formats || ['html', 'md', 'docx'];
-
-    let html = '<div class="formats">';
-    for (const fmt of formats) {
-        html += `<div class="fmt-row">
-            <input type="checkbox" id="fmt-${fmt}" value="${fmt}" checked>
-            <label for="fmt-${fmt}">${FMT_LABELS[fmt] || fmt}</label>
-        </div>`;
+    var html = '<div class="formats">';
+    for (var i = 0; i < formats.length; i++) {
+        var fmt = formats[i];
+        html += '<div class="fmt-row">'
+            + '<input type="checkbox" id="fmt-' + fmt + '" value="' + fmt + '" checked>'
+            + '<label for="fmt-' + fmt + '">' + (t(fmtKeys[fmt]) || fmt) + '</label>'
+            + '</div>';
     }
     html += '</div>';
-    html += '<button class="btn-download" id="btn-dl">Télécharger</button>';
-    status.innerHTML = html;
+    html += '<button class="btn-download" id="btn-dl">' + t('download') + '</button>';
+    el.innerHTML = html;
 
-    document.getElementById('btn-dl').addEventListener('click', async () => {
-        const btn = document.getElementById('btn-dl');
+    document.getElementById('btn-dl').addEventListener('click', async function () {
+        var btn = document.getElementById('btn-dl');
         btn.disabled = true;
-        btn.textContent = 'Préparation…';
+        btn.textContent = t('preparing');
 
-        await fetch(`${API}/api/delivery/${session.id}/downloaded`, { method: 'POST' });
+        await fetch(API + '/api/delivery/' + session.id + '/downloaded', { method: 'POST' });
 
-        btn.textContent = 'Téléchargement lancé';
-        setTimeout(() => {
-            btn.textContent = 'Télécharger';
+        btn.textContent = t('started');
+        setTimeout(function () {
+            btn.textContent = t('download');
             btn.disabled = false;
         }, 3000);
     });
+}
+
+/* ── Language toggle ──────────────────────────────────── */
+
+function setLang(newLang) {
+    lang = newLang;
+    localStorage.setItem('lang', lang);
+    applyLang();
+}
+
+document.getElementById('btn-fr').addEventListener('click', function () { setLang('fr'); });
+document.getElementById('btn-en').addEventListener('click', function () { setLang('en'); });
+
+/* ── Init ─────────────────────────────────────────────── */
+
+async function init() {
+    applyLang();
+
+    try {
+        if (!token) {
+            pageState = 'invalid';
+            renderStatus();
+            return;
+        }
+
+        var res = await fetch(API + '/api/delivery/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+        });
+
+        if (!res.ok) {
+            pageState = 'expired';
+            renderStatus();
+            return;
+        }
+
+        var data = await res.json();
+        sessionData = data.session;
+        pageState = 'formats';
+        renderStatus();
+    } catch (e) {
+        console.error('Init failed:', e);
+        pageState = 'error';
+        renderStatus();
+    }
 }
 
 init();
