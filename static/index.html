@@ -1379,7 +1379,19 @@ async function loadQuestionnaire() {
         const langPath = currentLang === 'en' ? '/en' : '';
         const res = await fetch(`${API}/api/questionnaire${langPath}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        questionnaire = await res.json();
+        const data = await res.json();
+        const blocks = {};
+        for (const ob of (data.obligations || [])) {
+            blocks[ob.id] = {
+                title: ob.titre,
+                applicable_si: ob.applicable_si || '',
+                questions: ob.questions || [],
+            };
+        }
+        questionnaire = {
+            context_questions: data.context_questions || [],
+            blocks: blocks,
+        };
     } catch (e) {
         console.error('Questionnaire fetch failed:', e);
         questionnaire = null;
@@ -1530,7 +1542,7 @@ function renderDiagStep() {
             <span class="diag-progress-text">${step + 1} / ${total}</span>
         </div>
         <div class="diag-question">
-            <h3>${esc(q.text || q.label || q.id)}</h3>
+            <h3>${esc(q.texte || q.text || q.label || q.id)}</h3>
             ${optionsHtml}
         </div>
         <div class="diag-nav">
@@ -1584,14 +1596,29 @@ async function submitDiagnostic() {
     wrap.innerHTML = '<div class="loading-center"><div class="spinner"></div></div>';
 
     try {
-        const body = { answers: diagState.answers };
+        const payload = {};
+        const ctxIds = new Set((diagState.contextQuestions || []).map(q => q.id));
+        const ctxAnswers = {};
+        for (const [k, v] of Object.entries(diagState.answers)) {
+            if (ctxIds.has(k)) {
+                ctxAnswers[k] = v;
+            }
+        }
+        if (Object.keys(ctxAnswers).length) payload.contexte = ctxAnswers;
+        for (const q of diagState.questions) {
+            if (diagState.answers[q.id] != null) {
+                const block = q._block;
+                if (!payload[block]) payload[block] = {};
+                payload[block][q.id] = diagState.answers[q.id];
+            }
+        }
         if (diagState.mode === 'single' && diagState.blockId) {
-            body.block = diagState.blockId;
+            payload._selected_blocks = [diagState.blockId];
         }
         const res = await fetch(`${API}/api/diagnostic`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
+            body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
